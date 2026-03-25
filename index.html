@@ -374,7 +374,20 @@ body{
   margin-bottom:10px;
   white-space:pre-line;
 }
-.inventory-box,.notes-box{padding:0 12px;}
+.card-inline-resources{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+.inline-resource{
+  background:#1a1d28;
+  border:1px solid #39445c;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.inventory-box,.creatures-box,.notes-box{padding:0 12px;}
 .coins-row{
   display:flex;
   gap:8px;
@@ -412,7 +425,9 @@ body{
 }
 .coin-card input::-webkit-outer-spin-button,
 .coin-card input::-webkit-inner-spin-button{-webkit-appearance:none;}
-.inventory-box textarea{
+.inventory-box textarea,
+.creatures-box textarea,
+.notes-box textarea{
   width:100%;
   min-height:140px;
   background:var(--card);
@@ -424,52 +439,25 @@ body{
   font:inherit;
   line-height:1.55;
 }
-.creature-card{
+.general-save-card{
   margin:0 12px 10px;
-  background:linear-gradient(135deg,#141821,#1c2230);
-  border:1px solid #4b5770;
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
-}
-.creature-head{
-  padding:12px 14px;
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-}
-.creature-head img{
-  width:68px;
-  height:68px;
-  object-fit:cover;
-  border-radius:10px;
-  border:1px solid #596785;
-  background:#0f1218;
-}
-.creature-name{font-size:16px;font-weight:800;color:#f1f5ff;}
-.creature-sub{font-size:12px;color:#a8b4cc;margin-top:2px;}
-.creature-desc{
-  font-size:12px;
-  color:#cfd8ea;
-  line-height:1.6;
-  padding:0 14px 14px;
-  white-space:pre-line;
-}
-.notes-list{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   padding:12px 14px;
-  list-style:none;
 }
-.notes-list li{
-  font-size:13px;
+.general-save-value{
+  font-size:28px;
+  font-weight:900;
+  color:var(--accent2);
+  margin-bottom:6px;
+}
+.general-save-note{
+  font-size:12px;
   color:var(--text2);
-  padding:8px 0;
-  border-bottom:1px solid #303042;
+  line-height:1.55;
 }
-.notes-list li:last-child{border-bottom:none;}
 .result-overlay{
   position:fixed;
   left:0;
@@ -528,9 +516,6 @@ body{
   <div class="list" id="effectBannerText"></div>
 </div>
 
-<div class="section-hdr">Quick Stats</div>
-<div class="grid-pills" id="quickStats"></div>
-
 <div class="section-hdr">Hit Points</div>
 <div class="hp-wrap">
   <div class="hp-row">
@@ -553,16 +538,10 @@ body{
   </div>
 </div>
 
-<div class="section-hdr">Ability Scores</div>
-<div class="ability-grid" id="abilityScores"></div>
+<div class="section-hdr">General Saving Throw</div>
+<div class="general-save-card" id="generalSaveWrap"></div>
 
-<div class="section-hdr">Saving Throws</div>
-<div class="scores-grid" id="savingThrows"></div>
-
-<div class="section-hdr">Skills</div>
-<div class="list-grid" id="skillsGrid"></div>
-
-<div class="section-hdr">Resources</div>
+<div class="section-hdr">Sparks</div>
 <div class="resource-grid" id="resources"></div>
 
 <div class="section-hdr">Tracker Cards</div>
@@ -590,11 +569,13 @@ body{
 </div>
 
 <div class="section-hdr">Mounts And Creatures</div>
-<div id="creaturesRoot"></div>
+<div class="creatures-box">
+  <textarea id="creaturesText"></textarea>
+</div>
 
 <div class="section-hdr">Notes</div>
 <div class="notes-box">
-  <ul class="notes-list" id="notesList"></ul>
+  <textarea id="notesText"></textarea>
 </div>
 
 <div class="result-overlay" id="resultOverlay">
@@ -626,6 +607,7 @@ body{
     "initiative": 0,
     "speed": 30,
     "proficiency": 2,
+    "spellAttackBonus": 2,
     "passivePerception": 10,
     "spellcastingAbility": "int"
   },
@@ -1046,6 +1028,7 @@ body{
       "tags": ["Bonus Action", "At Will"],
       "description": "Create a tangible barbarian hand for up to 1 minute. Control it with an action; it can carry or throw objects.",
       "buttons": [
+        { "type": "spellAttack", "label": "Spell Attack +2" },
         { "type": "note", "label": "Summon Hand", "message": "Create the physical hand for up to 1 minute. Direct it with an action." }
       ]
     },
@@ -1248,10 +1231,16 @@ const state = loadState();
 
 function loadState(){
   const inventoryText = Array.isArray(TRACKER_DATA.inventory) ? TRACKER_DATA.inventory.join("\n") : "";
+  const creaturesText = Array.isArray(TRACKER_DATA.creatures)
+    ? TRACKER_DATA.creatures.map(creature => `${creature.name}${creature.subtitle ? ` — ${creature.subtitle}` : ""}\n${creature.description || ""}`).join("\n\n")
+    : "";
+  const notesText = Array.isArray(TRACKER_DATA.notes) ? TRACKER_DATA.notes.join("\n") : "";
   const fallback = {
     hp: TRACKER_DATA.base.hpMax,
     tempHp: TRACKER_DATA.base.tempHpDefault || 0,
     inventory: inventoryText,
+    creaturesText,
+    notesText,
     coins: { ...(TRACKER_DATA.coins || { gp: 0, sp: 0, cp: 0 }) },
     resources: {}
   };
@@ -1265,6 +1254,8 @@ function loadState(){
       hp: typeof saved.hp === "number" ? saved.hp : fallback.hp,
       tempHp: typeof saved.tempHp === "number" ? saved.tempHp : fallback.tempHp,
       inventory: typeof saved.inventory === "string" ? saved.inventory : fallback.inventory,
+      creaturesText: typeof saved.creaturesText === "string" ? saved.creaturesText : fallback.creaturesText,
+      notesText: typeof saved.notesText === "string" ? saved.notesText : fallback.notesText,
       coins: { ...fallback.coins, ...(saved.coins || {}) },
       resources: { ...fallback.resources, ...(saved.resources || {}) }
     };
@@ -1399,6 +1390,7 @@ function renderEffectBanner(){
 
 function renderQuickStats(){
   const root = document.getElementById("quickStats");
+  if (!root) return;
   root.innerHTML = "";
   for (const item of buildQuickStats()) {
     const div = document.createElement("div");
@@ -1416,6 +1408,7 @@ function renderHP(){
 
 function renderAbilities(){
   const root = document.getElementById("abilityScores");
+  if (!root) return;
   root.innerHTML = "";
   const derived = computeDerived();
   const boosted = new Set();
@@ -1439,6 +1432,7 @@ function renderAbilities(){
 
 function renderRows(rootId, rows){
   const root = document.getElementById(rootId);
+  if (!root) return;
   root.innerHTML = "";
   const derived = computeDerived();
   for (const row of rows) {
@@ -1465,81 +1459,101 @@ function renderRows(rootId, rows){
 function renderResources(){
   const root = document.getElementById("resources");
   root.innerHTML = "";
-  for (const resource of TRACKER_DATA.resources) {
-    const resourceState = getResourceState(resource.id);
+  for (const resource of TRACKER_DATA.resources.filter(resource => resource.id === "sparkPool")) {
     const card = document.createElement("div");
     card.className = "resource-card";
-    const desc = resource.description ? `<div class="resource-desc">${resource.description}</div>` : "";
-    card.innerHTML = `
+    card.innerHTML = renderInlineResourcePanel(resource.id);
+    root.appendChild(card);
+  }
+}
+
+function renderGeneralSave(){
+  const root = document.getElementById("generalSaveWrap");
+  if (!root) return;
+  const derived = computeDerived();
+  const formula = buildGeneralSaveFormula();
+  root.innerHTML = `
+    <div class="general-save-value">${signed(derived.saveBonusGlobal)}</div>
+    <div class="general-save-note">Current general saving throw bonus from active abilities and magic items.</div>
+    <div class="resource-actions">
+      <button class="btn btn-roll" onclick="showResult('General Saving Throw', '${formula}', rollFormula('${formula}'), 'Saving throw')">Roll Save</button>
+      <button class="btn btn-note" onclick="showResult('General Saving Throw Bonus', '', { total: '${signed(derived.saveBonusGlobal)}', diceText: '' }, 'Current save bonus')">Show Bonus</button>
+    </div>
+  `;
+}
+
+function buildGeneralSaveFormula(){
+  const derived = computeDerived();
+  const bonus = derived.saveBonusGlobal;
+  return `1d20${bonus >= 0 ? "+" : ""}${bonus}`;
+}
+
+function getCardResourceIds(cardData){
+  return [...new Set((cardData.buttons || [])
+    .map(button => button.resourceId)
+    .filter(resourceId => resourceId && resourceId !== "sparkPool"))];
+}
+
+function renderInlineResourcePanel(resourceId){
+  const resource = getResourceDefinition(resourceId);
+  const resourceState = getResourceState(resourceId);
+  if (!resource || !resourceState) return "";
+  const desc = resource.description ? `<div class="resource-desc">${resource.description}</div>` : "";
+  let body = "";
+  if (resource.type === "pips" || resource.type === "slots") {
+    const pips = Array.from({ length: resource.max }, (_, index) => {
+      const filled = index < resourceState.current;
+      const value = filled ? index : index + 1;
+      return `<button class="pip${filled ? "" : " empty"}" onclick="setResourceCurrent('${resource.id}', ${value})"></button>`;
+    }).join("");
+    body = `
+      <div class="pip-row">${pips}</div>
+      <div class="resource-actions">
+        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
+      </div>
+    `;
+  } else if (resource.type === "pool") {
+    const step = resource.step || 1;
+    body = `
+      <div class="pool-row">
+        <div class="pool-value">${resourceState.current}/${resource.max}</div>
+        <div class="resource-actions">
+          <button class="btn btn-note" onclick="changePool('${resource.id}', -${step})">-${step}</button>
+          <button class="btn btn-heal" onclick="changePool('${resource.id}', ${step})">+${step}</button>
+          <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
+        </div>
+      </div>
+    `;
+  } else if (resource.type === "toggle") {
+    body = `
+      <div class="resource-actions">
+        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleResource('${resource.id}')">
+          ${resourceState.active ? "Active" : "Inactive"}
+        </button>
+      </div>
+    `;
+  } else if (resource.type === "toggleCharge") {
+    const available = resourceState.current > 0 || resourceState.active;
+    body = `
+      <div class="resource-actions">
+        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleChargeResource('${resource.id}')">
+          ${resourceState.active ? "Deactivate" : (available ? "Activate / Use" : "Spent")}
+        </button>
+        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
+      </div>
+      <div class="resource-desc" style="margin:8px 0 0">Uses remaining: ${resourceState.current}/${resource.max}</div>
+    `;
+  }
+  return `
+    <div class="inline-resource">
       <div class="resource-top">
         <div class="resource-name">${resource.label}</div>
         <div class="resource-refresh">${resource.refresh || ""}</div>
       </div>
       ${desc}
-      <div class="resource-body" id="resource-body-${resource.id}"></div>
-    `;
-    root.appendChild(card);
-    const body = card.querySelector(`#resource-body-${resource.id}`);
-    if (resource.type === "pips" || resource.type === "slots") {
-      const row = document.createElement("div");
-      row.className = "pip-row";
-      for (let i = 0; i < resource.max; i++) {
-        const pip = document.createElement("button");
-        const filled = i < resourceState.current;
-        pip.className = "pip" + (filled ? "" : " empty");
-        pip.onclick = () => setResourceCurrent(resource.id, filled ? i : i + 1);
-        row.appendChild(pip);
-      }
-      body.appendChild(row);
-      appendResourceReset(body, resource.id);
-    } else if (resource.type === "pool") {
-      const row = document.createElement("div");
-      row.className = "pool-row";
-      row.innerHTML = `<div class="pool-value">${resourceState.current}/${resource.max}</div>`;
-      const actions = document.createElement("div");
-      actions.className = "resource-actions";
-      const step = resource.step || 1;
-      actions.innerHTML = `
-        <button class="btn btn-note" onclick="changePool('${resource.id}', -${step})">-${step}</button>
-        <button class="btn btn-heal" onclick="changePool('${resource.id}', ${step})">+${step}</button>
-        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
-      `;
-      row.appendChild(actions);
-      body.appendChild(row);
-    } else if (resource.type === "toggle") {
-      const actions = document.createElement("div");
-      actions.className = "resource-actions";
-      actions.innerHTML = `
-        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleResource('${resource.id}')">
-          ${resourceState.active ? "Active" : "Inactive"}
-        </button>
-      `;
-      body.appendChild(actions);
-    } else if (resource.type === "toggleCharge") {
-      const actions = document.createElement("div");
-      actions.className = "resource-actions";
-      const available = resourceState.current > 0 || resourceState.active;
-      actions.innerHTML = `
-        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleChargeResource('${resource.id}')">
-          ${resourceState.active ? "Deactivate" : (available ? "Activate / Use" : "Spent")}
-        </button>
-        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
-      `;
-      const status = document.createElement("div");
-      status.className = "resource-desc";
-      status.style.margin = "8px 0 0";
-      status.textContent = `Uses remaining: ${resourceState.current}/${resource.max}`;
-      body.appendChild(actions);
-      body.appendChild(status);
-    }
-  }
-}
-
-function appendResourceReset(body, resourceId){
-  const actions = document.createElement("div");
-  actions.className = "resource-actions";
-  actions.innerHTML = `<button class="btn btn-reset" onclick="resetResource('${resourceId}')">Reset</button>`;
-  body.appendChild(actions);
+      ${body}
+    </div>
+  `;
 }
 
 function renderCards(){
@@ -1574,6 +1588,7 @@ function renderCards(){
         return `<span class="tag ${cls}">${tag}</span>`;
       }).join("");
       const art = cardData.image ? `<img class="card-art" src="${cardData.image}" alt="${cardData.name}">` : "";
+      const inlineResources = getCardResourceIds(cardData).map(renderInlineResourcePanel).join("");
       card.innerHTML = `
         <div class="card-head ${cardData.image ? "has-art" : ""}" onclick="toggleCard(this.parentElement)">
           <div class="card-title-wrap">
@@ -1589,6 +1604,7 @@ function renderCards(){
         <div class="card-body">
           <div class="card-desc">${cardData.description || ""}</div>
           <div class="resource-actions">${renderButtons(cardData).join("")}</div>
+          ${inlineResources ? `<div class="card-inline-resources">${inlineResources}</div>` : ""}
         </div>
       `;
       root.appendChild(card);
@@ -1601,8 +1617,9 @@ function renderButtons(cardData){
     const action = `handleCardButton('${cardData.id}', ${index})`;
     let cls = "btn-note";
     if (button.type === "attack") cls = "btn-atk";
+    if (button.type === "spellAttack") cls = "btn-atk";
     if (button.type === "damage" || button.type === "roll") cls = "btn-dmg";
-    if (button.type === "poolSpend" || button.type === "setHP" || button.type === "setTempHP") cls = "btn-heal";
+    if (button.type === "poolSpend" || button.type === "poolGain" || button.type === "setHP" || button.type === "setTempHP") cls = "btn-heal";
     if (button.type === "toggle" || button.type === "toggleCharge") cls = "btn-toggle";
     return `<button class="btn ${cls}" onclick="${action}">${button.label}</button>`;
   });
@@ -1615,6 +1632,11 @@ function handleCardButton(cardId, buttonIndex){
   if (button.type === "attack") {
     const roll = buildAttackRoll(cardData);
     showResult(`${cardData.name} Attack`, roll.formula, roll.result, "Attack roll");
+    return;
+  }
+  if (button.type === "spellAttack") {
+    const formula = buildSpellAttackFormula();
+    showResult(`${cardData.name} Spell Attack`, formula, rollFormula(formula), "Spell attack");
     return;
   }
   if (button.type === "damage") {
@@ -1672,6 +1694,11 @@ function buildButtonFormula(button){
     for (const extraDie of derived.spellDamageBonusDice) parts.push(`+${extraDie}`);
   }
   return parts.join("");
+}
+
+function buildSpellAttackFormula(){
+  const bonus = TRACKER_DATA.base.spellAttackBonus || 0;
+  return `1d20${bonus >= 0 ? "+" : ""}${bonus}`;
 }
 
 function buildAttackRoll(cardData){
@@ -1858,43 +1885,28 @@ function renderCurrency(){
 }
 
 function renderCreatures(){
-  const root = document.getElementById("creaturesRoot");
-  root.innerHTML = "";
-  for (const creature of TRACKER_DATA.creatures || []) {
-    const card = document.createElement("div");
-    card.className = "creature-card";
-    card.innerHTML = `
-      <div class="creature-head">
-        <img src="${creature.image || TRACKER_DATA.meta.portrait}" alt="${creature.name}">
-        <div>
-          <div class="creature-name">${creature.name}</div>
-          <div class="creature-sub">${creature.subtitle || ""}</div>
-        </div>
-      </div>
-      <div class="creature-desc">${creature.description || ""}</div>
-    `;
-    root.appendChild(card);
-  }
+  const textarea = document.getElementById("creaturesText");
+  textarea.value = state.creaturesText;
+  textarea.onchange = () => {
+    state.creaturesText = textarea.value;
+    saveState();
+  };
 }
 
 function renderNotes(){
-  const root = document.getElementById("notesList");
-  root.innerHTML = "";
-  for (const note of TRACKER_DATA.notes || []) {
-    const li = document.createElement("li");
-    li.textContent = note;
-    root.appendChild(li);
-  }
+  const textarea = document.getElementById("notesText");
+  textarea.value = state.notesText;
+  textarea.onchange = () => {
+    state.notesText = textarea.value;
+    saveState();
+  };
 }
 
 function render(){
   renderHeader();
   renderEffectBanner();
-  renderQuickStats();
   renderHP();
-  renderAbilities();
-  renderRows("savingThrows", TRACKER_DATA.saves);
-  renderRows("skillsGrid", TRACKER_DATA.skills);
+  renderGeneralSave();
   renderResources();
   renderCards();
   renderCurrency();
