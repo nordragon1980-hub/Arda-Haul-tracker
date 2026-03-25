@@ -2,79 +2,1920 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arda Haul Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Haul Ardan Tracker</title>
 <style>
 :root{
-  --bg:#11131a;
-  --panel:#1c2130;
-  --panel2:#242b3d;
-  --border:#3a4766;
-  --accent:#d5b15f;
-  --text:#ece7db;
-  --muted:#aeb4c2;
+  --bg:#0f0f14;
+  --surface:#1a1a24;
+  --card:#22222f;
+  --card2:#2a2a3a;
+  --border:#3a3a50;
+  --accent:#d65b2f;
+  --accent2:#ff9a63;
+  --red:#d94f4f;
+  --red2:#ff7070;
+  --green:#4caf7a;
+  --blue:#5b8fd4;
+  --purple:#9b6dcc;
+  --text:#e8e4d9;
+  --text2:#a9a5a0;
+  --text3:#6b6760;
+  --gold-glow:#ff9b4a;
+  --shadow:0 2px 10px rgba(0,0,0,.55);
+  --radius:12px;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0;}
 body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  background:
-    radial-gradient(circle at top,#24304a 0%,transparent 35%),
-    linear-gradient(180deg,#0d1017 0%,var(--bg) 100%);
+  background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.45;
+  min-height:100vh;
+  padding-bottom:140px;
 }
-.card{
-  width:min(720px,100%);
-  background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:28px;
-  box-shadow:0 18px 48px rgba(0,0,0,.35);
+.header{
+  background:linear-gradient(180deg,#0a0a10 0%,var(--surface) 100%);
+  border-bottom:2px solid var(--accent);
+  text-align:center;
 }
-.eyebrow{
-  color:var(--accent);
+.portrait-wrap{
+  width:100%;
+  max-height:720px;
+  overflow:hidden;
+  position:relative;
+}
+.portrait-wrap::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:92px;
+  background:linear-gradient(transparent,var(--surface));
+}
+.portrait-wrap img{
+  width:100%;
+  height:auto;
+  display:block;
+  object-fit:cover;
+  object-position:top center;
+  background:#111;
+}
+.char-title{padding:12px 16px 14px;}
+.char-name{
+  font-size:24px;
+  font-weight:900;
+  color:var(--accent2);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-shadow:0 1px 8px rgba(200,162,69,.4);
+}
+.char-sub{font-size:13px;color:var(--text2);margin-top:4px;}
+.char-badge{
+  display:inline-block;
+  margin-top:8px;
+  background:linear-gradient(135deg,#3a2a00,#5a4000);
+  border:1px solid var(--accent);
+  border-radius:999px;
+  padding:4px 12px;
   font-size:12px;
   font-weight:800;
-  letter-spacing:2px;
+  color:var(--accent2);
+  letter-spacing:.6px;
+}
+#effectBanner{
+  display:none;
+  margin:10px 12px 0;
+  background:linear-gradient(135deg,#1a1200,#2a2000);
+  border:1.5px solid var(--gold-glow);
+  border-radius:var(--radius);
+  padding:10px 14px;
+}
+#effectBanner.visible{display:block;}
+#effectBanner .title{
+  font-size:12px;
+  font-weight:800;
+  color:var(--gold-glow);
+  letter-spacing:1px;
   text-transform:uppercase;
+  margin-bottom:6px;
 }
-h1{
-  margin:10px 0 8px;
-  font-size:34px;
-  line-height:1.1;
+#effectBanner .list{
+  font-size:12px;
+  color:#ecdca9;
+  line-height:1.7;
+  white-space:pre-line;
 }
-p{
-  margin:0;
-  color:var(--muted);
-  line-height:1.6;
-  font-size:16px;
-}
-.status{
-  margin-top:18px;
-  display:inline-flex;
-  gap:8px;
-  align-items:center;
-  padding:8px 12px;
-  border-radius:999px;
-  border:1px solid #d5b15f44;
-  background:#d5b15f12;
+.section-hdr{
+  padding:16px 12px 8px;
+  font-size:11px;
+  font-weight:800;
   color:var(--accent);
-  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  border-top:1px solid var(--border);
+  margin-top:4px;
+}
+.grid-pills{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:10px 12px 8px;
+}
+.pill{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:11px 8px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.pill .val{display:block;font-size:22px;font-weight:900;color:var(--accent2);}
+.pill .lbl{display:block;font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;}
+.pill .sub{display:block;font-size:10px;color:var(--text3);margin-top:2px;}
+.pill.active{
+  border-color:var(--gold-glow);
+  background:#201800;
+}
+.hp-wrap{
+  margin:0 12px 8px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+}
+.hp-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+.hp-row:last-child{margin-bottom:0;}
+.hp-row label{
+  min-width:64px;
+  color:var(--text2);
+  font-size:12px;
   font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.hp-row input{
+  width:78px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--green);
+  font-size:20px;
+  font-weight:800;
+  text-align:center;
+  padding:6px 4px;
+  -moz-appearance:textfield;
+}
+.hp-row input.temp{color:var(--accent2);}
+.hp-row input::-webkit-outer-spin-button,
+.hp-row input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.hp-row .sep{font-size:18px;color:var(--text3);}
+.hp-row .maxhp{font-size:18px;color:var(--text2);}
+.hp-btns{display:flex;gap:6px;margin-left:auto;}
+.mini-btn{
+  min-width:38px;
+  height:38px;
+  padding:0 10px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+}
+.scores-grid,.list-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  padding:0 12px;
+}
+.score-row,.list-row{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.score-big{
+  min-width:44px;
+  text-align:center;
+  font-size:18px;
+  font-weight:900;
+  color:var(--accent2);
+}
+.score-meta{flex:1;}
+.score-name{font-size:12px;color:var(--text2);}
+.score-note{font-size:10px;color:var(--text3);margin-top:2px;}
+.ability-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:0 12px;
+  margin-bottom:8px;
+}
+.ability-cell{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 4px;
+  text-align:center;
+}
+.ability-cell.active{
+  border-color:var(--gold-glow);
+  background:#1b1605;
+}
+.ability-score{font-size:22px;font-weight:900;color:var(--text);}
+.ability-mod{font-size:14px;font-weight:800;color:var(--accent2);}
+.ability-name{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;}
+.resource-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+  padding:0 12px;
+}
+.resource-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+}
+.resource-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.resource-name{font-size:14px;font-weight:800;color:var(--accent2);}
+.resource-refresh{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.resource-desc{font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:10px;}
+.pip-row{display:flex;gap:6px;flex-wrap:wrap;}
+.pip{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  background:var(--accent);
+  cursor:pointer;
+}
+.pip.empty{background:transparent;}
+.pool-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.pool-value{
+  font-size:28px;
+  font-weight:900;
+  color:var(--green);
+  min-width:92px;
+}
+.resource-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.btn{
+  border:none;
+  border-radius:9px;
+  padding:10px 14px;
+  font-size:13px;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+}
+.btn-roll{background:linear-gradient(135deg,#1a3a5a,#2a5080);color:#e5f0ff;}
+.btn-atk{background:var(--red);color:#fff;}
+.btn-dmg{background:#8b3a3a;color:#ffd1d1;}
+.btn-heal{background:#2a7a4a;color:#d6ffe4;}
+.btn-note{background:var(--card2);color:var(--text);}
+.btn-toggle{background:linear-gradient(135deg,#8a6f00,#c8a245);color:#1a1200;}
+.btn-toggle.active{background:linear-gradient(135deg,#c8a245,#ffd700);}
+.btn-reset{background:var(--card2);color:var(--text2);border:1px solid var(--border);}
+.cards{padding:0 12px;}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.card.expanded .card-body{display:block;}
+.card-head{
+  background:var(--card2);
+  padding:12px 14px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  cursor:pointer;
+}
+.card-head.has-art .card-title-wrap{display:flex;gap:12px;flex:1;min-width:0;}
+.card-art{
+  width:78px;
+  height:78px;
+  object-fit:cover;
+  object-position:center;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#101014;
+  flex-shrink:0;
+}
+.card-title-block{flex:1;min-width:0;}
+.card-name{font-size:16px;font-weight:800;color:var(--text);}
+.card-sub{font-size:12px;color:var(--text3);margin-top:3px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;}
+.tag{
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  padding:2px 7px;
+  border-radius:999px;
+  border:1px solid;
+}
+.tag.action{color:#5bcfcf;border-color:#5bcfcf44;background:#5bcfcf11;}
+.tag.bonus{color:#cf9b5b;border-color:#cf9b5b44;background:#cf9b5b11;}
+.tag.reaction{color:#cf5bcf;border-color:#cf5bcf44;background:#cf5bcf11;}
+.tag.short{color:#4caf7a;border-color:#4caf7a44;background:#4caf7a11;}
+.tag.long{color:#5b8fd4;border-color:#5b8fd444;background:#5b8fd411;}
+.tag.passive{color:#b5b5b5;border-color:#b5b5b544;background:transparent;}
+.tag.highlight{color:#ffd700;border-color:#ffd70055;background:#ffd70022;}
+.chev{
+  font-size:16px;
+  color:var(--text3);
+  flex-shrink:0;
+  transition:transform .2s;
+  margin-top:2px;
+}
+.card.expanded .chev{transform:rotate(180deg);}
+.card-body{
+  display:none;
+  padding:12px 14px 14px;
+  border-top:1px solid var(--border);
+}
+.card-desc{
+  font-size:13px;
+  color:var(--text2);
+  line-height:1.6;
+  margin-bottom:10px;
+  white-space:pre-line;
+}
+.inventory-box,.notes-box{padding:0 12px;}
+.coins-row{
+  display:flex;
+  gap:8px;
+  padding:0 12px;
+}
+.coin-card{
+  flex:1;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  padding:10px;
+  text-align:center;
+}
+.coin-card label{
+  display:block;
+  font-size:11px;
+  color:var(--accent2);
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.coin-card input{
+  width:100%;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-size:18px;
+  font-weight:800;
+  text-align:center;
+  padding:6px 4px;
+  -moz-appearance:textfield;
+}
+.coin-card input::-webkit-outer-spin-button,
+.coin-card input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.inventory-box textarea{
+  width:100%;
+  min-height:140px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  color:var(--text);
+  padding:12px;
+  resize:vertical;
+  font:inherit;
+  line-height:1.55;
+}
+.creature-card{
+  margin:0 12px 10px;
+  background:linear-gradient(135deg,#141821,#1c2230);
+  border:1px solid #4b5770;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.creature-head{
+  padding:12px 14px;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+.creature-head img{
+  width:68px;
+  height:68px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid #596785;
+  background:#0f1218;
+}
+.creature-name{font-size:16px;font-weight:800;color:#f1f5ff;}
+.creature-sub{font-size:12px;color:#a8b4cc;margin-top:2px;}
+.creature-desc{
+  font-size:12px;
+  color:#cfd8ea;
+  line-height:1.6;
+  padding:0 14px 14px;
+  white-space:pre-line;
+}
+.notes-list{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+  list-style:none;
+}
+.notes-list li{
+  font-size:13px;
+  color:var(--text2);
+  padding:8px 0;
+  border-bottom:1px solid #303042;
+}
+.notes-list li:last-child{border-bottom:none;}
+.result-overlay{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  z-index:1000;
+}
+.result-overlay.open{transform:translateY(0);}
+.result-panel{
+  background:#1a1a26;
+  border-top:3px solid var(--accent);
+  border-radius:18px 18px 0 0;
+  padding:18px 20px 24px;
+  box-shadow:0 -8px 32px rgba(0,0,0,.7);
+}
+.result-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.result-title{font-size:14px;font-weight:800;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;}
+.result-close{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--card2);
+  color:var(--text);
+  font-size:18px;
+  cursor:pointer;
+}
+.result-formula{font-size:13px;color:var(--text2);margin-bottom:8px;}
+.result-dice{font-size:13px;color:var(--text2);font-style:italic;margin-bottom:10px;}
+.result-total{font-size:52px;font-weight:900;line-height:1;text-align:center;padding:6px 0;}
+.result-note{margin-top:8px;text-align:center;font-size:14px;font-weight:800;color:var(--text2);}
+@media (min-width:800px){
+  body{max-width:760px;margin:0 auto;background:linear-gradient(180deg,#09090c 0%,var(--bg) 40%);}
 }
 </style>
 </head>
 <body>
-  <main class="card">
-    <div class="eyebrow">D&D 5e Tracker</div>
-    <h1>Arda Haul</h1>
-    <p>This repository is ready for a full interactive character tracker. The first published page is live, and the detailed tracker can now be generated and deployed through the Codex workflow.</p>
-    <div class="status">Starter Site Ready</div>
-  </main>
+<div class="header">
+  <div class="portrait-wrap"><img id="portrait" alt="Portrait"></div>
+  <div class="char-title">
+    <div class="char-name" id="charName"></div>
+    <div class="char-sub" id="charSub"></div>
+    <div class="char-badge" id="charBadge"></div>
+  </div>
+</div>
+
+<div id="effectBanner">
+  <div class="title">Active Effects</div>
+  <div class="list" id="effectBannerText"></div>
+</div>
+
+<div class="section-hdr">Quick Stats</div>
+<div class="grid-pills" id="quickStats"></div>
+
+<div class="section-hdr">Hit Points</div>
+<div class="hp-wrap">
+  <div class="hp-row">
+    <label>Current</label>
+    <input id="currentHP" type="number" inputmode="numeric">
+    <span class="sep">/</span>
+    <span class="maxhp" id="maxHP"></span>
+    <div class="hp-btns">
+      <button class="mini-btn" onclick="adjustHP(-1)">−</button>
+      <button class="mini-btn" onclick="adjustHP(1)">+</button>
+    </div>
+  </div>
+  <div class="hp-row">
+    <label>Temp HP</label>
+    <input id="tempHP" class="temp" type="number" inputmode="numeric">
+    <div class="hp-btns">
+      <button class="mini-btn" onclick="adjustTempHP(-1)">−</button>
+      <button class="mini-btn" onclick="adjustTempHP(1)">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="section-hdr">Ability Scores</div>
+<div class="ability-grid" id="abilityScores"></div>
+
+<div class="section-hdr">Saving Throws</div>
+<div class="scores-grid" id="savingThrows"></div>
+
+<div class="section-hdr">Skills</div>
+<div class="list-grid" id="skillsGrid"></div>
+
+<div class="section-hdr">Resources</div>
+<div class="resource-grid" id="resources"></div>
+
+<div class="section-hdr">Tracker Cards</div>
+<div class="cards" id="cardsRoot"></div>
+
+<div class="section-hdr">Currency</div>
+<div class="coins-row">
+  <div class="coin-card">
+    <label>Gold</label>
+    <input id="coin-gp" type="number" inputmode="numeric" min="0">
+  </div>
+  <div class="coin-card">
+    <label>Silver</label>
+    <input id="coin-sp" type="number" inputmode="numeric" min="0">
+  </div>
+  <div class="coin-card">
+    <label>Copper</label>
+    <input id="coin-cp" type="number" inputmode="numeric" min="0">
+  </div>
+</div>
+
+<div class="section-hdr">Inventory</div>
+<div class="inventory-box">
+  <textarea id="inventoryText"></textarea>
+</div>
+
+<div class="section-hdr">Mounts And Creatures</div>
+<div id="creaturesRoot"></div>
+
+<div class="section-hdr">Notes</div>
+<div class="notes-box">
+  <ul class="notes-list" id="notesList"></ul>
+</div>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-panel">
+    <div class="result-top">
+      <div class="result-title" id="resultLabel">Result</div>
+      <button class="result-close" onclick="closeResult()">×</button>
+    </div>
+    <div class="result-formula" id="resultFormula"></div>
+    <div class="result-dice" id="resultDice"></div>
+    <div class="result-total" id="resultTotal"></div>
+    <div class="result-note" id="resultNote"></div>
+  </div>
+</div>
+
+<script id="tracker-data" type="application/json">
+{
+  "storageKey": "haul_ardan_tracker_v1",
+  "meta": {
+    "name": "Haul Ardan Malgrave",
+    "subtitle": "Blood Elf · Mage-Pyromancer",
+    "badge": "Custom Mechanics Tracker",
+    "portrait": "assets/manual_upload/portrait.png"
+  },
+  "base": {
+    "hpMax": 34,
+    "tempHpDefault": 0,
+    "ac": 10,
+    "initiative": 0,
+    "speed": 30,
+    "proficiency": 2,
+    "passivePerception": 10,
+    "spellcastingAbility": "int"
+  },
+  "abilities": {
+    "str": 10,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10
+  },
+  "saves": [
+    { "name": "Strength", "bonus": 0 },
+    { "name": "Dexterity", "bonus": 0 },
+    { "name": "Constitution", "bonus": 0 },
+    { "name": "Intelligence", "bonus": 0 },
+    { "name": "Wisdom", "bonus": 0 },
+    { "name": "Charisma", "bonus": 0 }
+  ],
+  "skills": [
+    { "name": "Arcana", "bonus": 0, "note": "Custom magic uses fixed DCs from the source sheet" },
+    { "name": "Investigation", "bonus": 0 },
+    { "name": "Perception", "bonus": 0, "note": "Passive Perception 10" },
+    { "name": "Insight", "bonus": 0 }
+  ],
+  "coins": {
+    "gp": 20,
+    "sp": 0,
+    "cp": 0
+  },
+  "resources": [
+    {
+      "id": "sparkPool",
+      "type": "pool",
+      "label": "Sparks",
+      "refresh": "Generated in combat",
+      "description": "Spark pool for amplified fire effects. Maximum 3 sparks.",
+      "current": 0,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "id": "fireballUses",
+      "type": "pips",
+      "label": "Fireball Uses",
+      "refresh": "Long Rest",
+      "description": "Base Fireball uses before spark amplification.",
+      "current": 2,
+      "max": 2
+    },
+    {
+      "id": "barbaricBlink",
+      "type": "pips",
+      "label": "Barbaric Blink",
+      "refresh": "Long Rest",
+      "description": "Teleport and shockwave uses.",
+      "current": 2,
+      "max": 2
+    },
+    {
+      "id": "elfIntervention",
+      "type": "pips",
+      "label": "Beautiful Elf Intervention",
+      "refresh": "Long Rest",
+      "description": "Damage redirection and void strike.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "smallDistortion",
+      "type": "pips",
+      "label": "Minor Distortion",
+      "refresh": "Long Rest",
+      "description": "Pure damage burst.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "gravityVortex",
+      "type": "pips",
+      "label": "Gravity Vortex",
+      "refresh": "Long Rest",
+      "description": "Force-field vortex with pull on failed save.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "senseOfBeauty",
+      "type": "toggleCharge",
+      "label": "Sense of Beauty",
+      "refresh": "Long Rest",
+      "description": "Concentration aura detection. 20 m radius.",
+      "current": 2,
+      "max": 2,
+      "active": false,
+      "effect": {
+        "bannerLines": [
+          "Sense of Beauty: magical aura detection is active",
+          "Sense of Beauty: blocked by stone, metal, lead, or thick wood/earth"
+        ]
+      }
+    },
+    {
+      "id": "haulAnomaly",
+      "type": "pips",
+      "label": "Haul Anomaly",
+      "refresh": "Long Rest",
+      "description": "Stops time in a small area or around one object.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "unknownDoor",
+      "type": "pips",
+      "label": "Door Into The Unknown",
+      "refresh": "Long Rest",
+      "description": "Interplanar opening with severe risks.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "fallControl",
+      "type": "pips",
+      "label": "Falling Control",
+      "refresh": "Long Rest",
+      "description": "Safe landing up to 200 meters.",
+      "current": 2,
+      "max": 2
+    },
+    {
+      "id": "minorTeleport",
+      "type": "pips",
+      "label": "Minor Teleport",
+      "refresh": "Long Rest",
+      "description": "10-minute ritual for moving an unattended object.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "magicProtection",
+      "type": "toggleCharge",
+      "label": "Magic Protection",
+      "refresh": "Long Rest",
+      "description": "Reduce the next incoming attack by 15 damage until your next turn.",
+      "current": 1,
+      "max": 1,
+      "active": false,
+      "effect": {
+        "bannerLines": ["Magic Protection: reduce the next incoming attack by 15"]
+      }
+    },
+    {
+      "id": "timeAcceleration",
+      "type": "pips",
+      "label": "Time Acceleration",
+      "refresh": "Long Rest",
+      "description": "Gain one additional action this turn.",
+      "current": 1,
+      "max": 1
+    },
+    {
+      "id": "cordHeld",
+      "type": "toggle",
+      "label": "Cord Held",
+      "refresh": "While holding",
+      "description": "Holding the cord grants +3 initiative.",
+      "active": false,
+      "effect": {
+        "stats": { "initiative": 3 },
+        "bannerLines": ["Cord: +3 initiative while held"]
+      }
+    },
+    {
+      "id": "wavyAmulet",
+      "type": "toggle",
+      "label": "Wavy Amulet",
+      "refresh": "Equipped",
+      "description": "Active item. +2 to all saving throws.",
+      "active": true,
+      "effect": {
+        "saveBonusGlobal": 2,
+        "bannerLines": ["Wavy Amulet: +2 to all saving throws"]
+      }
+    },
+    {
+      "id": "blackRing",
+      "type": "toggle",
+      "label": "Black Ring",
+      "refresh": "Equipped",
+      "description": "Combat protection, artifact guidance, and one unknown feature.",
+      "active": true,
+      "effect": {
+        "bannerLines": [
+          "Black Ring: combat protection active",
+          "Black Ring: artifact guidance active"
+        ]
+      }
+    },
+    {
+      "id": "goldenPyramid",
+      "type": "toggle",
+      "label": "Golden Pyramid (Naphtha)",
+      "refresh": "Carried",
+      "description": "Enhances fire magic. No exact numeric modifier is given in the source sheet.",
+      "active": true,
+      "effect": {
+        "bannerLines": ["Golden Pyramid: fire magic enhancement active"]
+      }
+    },
+    {
+      "id": "stoneFocus",
+      "type": "toggle",
+      "label": "Stone Focus",
+      "refresh": "Optional risk item",
+      "description": "Adds +1d8 to magical damage and applies -5 to all saving throws while active.",
+      "active": false,
+      "effect": {
+        "saveBonusGlobal": -5,
+        "spellDamageBonusDice": ["1d8"],
+        "bannerLines": [
+          "Stone Focus: spell damage gains +1d8",
+          "Stone Focus: all saving throws take -5"
+        ]
+      }
+    },
+    {
+      "id": "firstSparkGloves",
+      "type": "toggleCharge",
+      "label": "Gloves of the First Spark",
+      "refresh": "Per Battle",
+      "description": "One fire spell each battle can crit by chance. Track the primed use here.",
+      "current": 1,
+      "max": 1,
+      "active": false,
+      "effect": {
+        "bannerLines": ["Gloves of the First Spark: crit-ready fire spell primed"]
+      }
+    }
+  ],
+  "cards": [
+    {
+      "id": "heatedIron",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Heated Iron",
+      "subtitle": "Action · Cantrip",
+      "expanded": true,
+      "tags": ["Action", "At Will"],
+      "description": "Heat a metal surface within 10 meters to thermal stage 2 and deal 2d6 fire damage.",
+      "buttons": [
+        { "type": "roll", "label": "2d6 Fire", "formula": "2d6", "resultType": "dmg", "applySpellBonuses": true }
+      ]
+    },
+    {
+      "id": "fireball",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Fireball",
+      "subtitle": "Action · 2 / Long Rest",
+      "image": "assets/manual_upload/fireball.png",
+      "tags": ["Action", "Long Rest", "Highlight"],
+      "description": "Range 100 m. Dex save 13. Failed save: 6d6 fire damage. Success: half damage. Radius 2 m. Each spark adds +1d6 and is consumed manually.",
+      "buttons": [
+        { "type": "roll", "label": "Base 6d6", "formula": "6d6", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "With 1 Spark", "formula": "7d6", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "With 2 Sparks", "formula": "8d6", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "With 3 Sparks", "formula": "9d6", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "Dex Save 13", "formula": "13", "resultType": "note" },
+        { "type": "spend", "label": "Spend Fireball Use", "resourceId": "fireballUses", "amount": 1 }
+      ]
+    },
+    {
+      "id": "barbaricBlinkCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Barbaric Blink",
+      "subtitle": "Action · 2 / Long Rest",
+      "tags": ["Action", "Long Rest"],
+      "description": "Teleport 10 m to a visible point. On arrival, nearby enemies are stunned for now, take 1d10 damage, and make their next attack with disadvantage.",
+      "buttons": [
+        { "type": "roll", "label": "Arrival Damage 1d10", "formula": "1d10", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "note", "label": "Apply Blink Effects", "message": "Barbaric Blink: stun nearby enemies at the destination point and give them disadvantage on their next attack." },
+        { "type": "spend", "label": "Spend Blink Use", "resourceId": "barbaricBlink", "amount": 1 }
+      ]
+    },
+    {
+      "id": "beautifulElfInterventionCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Beautiful Elf Intervention",
+      "subtitle": "Action · 1 / Long Rest",
+      "image": "assets/manual_upload/elf-intervention.png",
+      "tags": ["Action", "Long Rest"],
+      "description": "Requires a hit. Redirect damage dealt to the current target this round onto another visible target and add 4d10 void damage.",
+      "buttons": [
+        { "type": "roll", "label": "4d10 Void", "formula": "4d10", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "note", "label": "Redirect Damage", "message": "Move the damage dealt this round from the first target onto another visible target. Damage type remains the same." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "elfIntervention", "amount": 1 }
+      ]
+    },
+    {
+      "id": "minorDistortionCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Minor Distortion",
+      "subtitle": "Action · 1 / Long Rest",
+      "tags": ["Action", "Long Rest"],
+      "description": "3 m radius. Save 14. Shift atoms by 0.2 m and deal 3d8 pure damage.",
+      "buttons": [
+        { "type": "roll", "label": "3d8 Pure", "formula": "3d8", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "Save 14", "formula": "14", "resultType": "note" },
+        { "type": "spend", "label": "Spend Use", "resourceId": "smallDistortion", "amount": 1 }
+      ]
+    },
+    {
+      "id": "gravityVortexCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Gravity Vortex",
+      "subtitle": "Action · 1 / Long Rest",
+      "image": "assets/manual_upload/gravity-vortex.png",
+      "tags": ["Action", "Long Rest", "Highlight"],
+      "description": "10 m radius. Con save 16. Failed save: 5d10 force-field damage and pull to the center. Success: half damage and no pull.",
+      "buttons": [
+        { "type": "roll", "label": "5d10 Force", "formula": "5d10", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "Con Save 16", "formula": "16", "resultType": "note" },
+        { "type": "note", "label": "Half On Save", "message": "On a successful save, the target takes half damage and is not pulled." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "gravityVortex", "amount": 1 }
+      ]
+    },
+    {
+      "id": "senseOfBeautyCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Sense of Beauty",
+      "subtitle": "Action · 2 / Long Rest · Concentration",
+      "tags": ["Action", "Long Rest", "Concentration"],
+      "description": "Detect magical auras and their schools in a 20 m radius.",
+      "buttons": [
+        { "type": "toggleCharge", "label": "Toggle Sense", "resourceId": "senseOfBeauty" }
+      ]
+    },
+    {
+      "id": "haulAnomalyCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Haul Anomaly",
+      "subtitle": "Action · 1 / Long Rest",
+      "tags": ["Action", "Long Rest"],
+      "description": "Stop the flow of time in a small area or around one object. Resolve the exact scene effect manually.",
+      "buttons": [
+        { "type": "note", "label": "Freeze Time", "message": "Haul Anomaly: stop time in a small area or around one object for a custom scene effect." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "haulAnomaly", "amount": 1 }
+      ]
+    },
+    {
+      "id": "unknownDoorCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Door Into The Unknown",
+      "subtitle": "Action · 1 / Long Rest",
+      "tags": ["Action", "Long Rest", "Highlight"],
+      "description": "Open a passage between worlds. It can produce an item but may inflict exhaustion, weakness, or paralysis. Requires a 19-20 result.",
+      "buttons": [
+        { "type": "roll", "label": "Requirement Roll", "formula": "1d20", "resultType": "note" },
+        { "type": "note", "label": "Apply Side Effects", "message": "Possible side effects: exhaustion, weakness, paralysis, or another severe narrative drawback." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "unknownDoor", "amount": 1 }
+      ]
+    },
+    {
+      "id": "fallControlCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Falling Control",
+      "subtitle": "Action · 2 / Long Rest",
+      "tags": ["Action", "Long Rest"],
+      "description": "Safe landing from falls up to 200 meters.",
+      "buttons": [
+        { "type": "note", "label": "Land Safely", "message": "Falling Control lets Haul land safely from a fall up to 200 meters." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "fallControl", "amount": 1 }
+      ]
+    },
+    {
+      "id": "minorTeleportCard",
+      "section": "Actions",
+      "kind": "feature",
+      "name": "Minor Teleport",
+      "subtitle": "Action · 1 / Long Rest",
+      "tags": ["Action", "Long Rest"],
+      "description": "10-minute ritual. Move one unattended object up to roughly 1 cubic meter if line of sight exists and the destination is free.",
+      "buttons": [
+        { "type": "note", "label": "Start Ritual", "message": "Minor Teleport: 10-minute ritual. Requires line of sight and an empty destination." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "minorTeleport", "amount": 1 }
+      ]
+    },
+    {
+      "id": "flashCard",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Flash",
+      "subtitle": "Bonus Action · Cantrip",
+      "image": "assets/manual_upload/flash.png",
+      "tags": ["Bonus Action", "At Will", "Highlight"],
+      "description": "Range 20 m, radius 2 m. Save 16. Deal 4d6 fire damage, inflict Blinded, and gain 1 spark.",
+      "buttons": [
+        { "type": "roll", "label": "4d6 Fire", "formula": "4d6", "resultType": "dmg", "applySpellBonuses": true },
+        { "type": "roll", "label": "Save 16", "formula": "16", "resultType": "note" },
+        { "type": "note", "label": "Apply Blinded", "message": "Blinded: cannot see, automatically fails sight-based checks, attacks against it have advantage, and its attacks have disadvantage." },
+        { "type": "poolGain", "label": "Gain 1 Spark", "resourceId": "sparkPool", "amount": 1 }
+      ]
+    },
+    {
+      "id": "nonmagicalHand",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Nonmagical Hand",
+      "subtitle": "Bonus Action · Cantrip",
+      "tags": ["Bonus Action", "At Will"],
+      "description": "Create a tangible barbarian hand for up to 1 minute. Control it with an action; it can carry or throw objects.",
+      "buttons": [
+        { "type": "note", "label": "Summon Hand", "message": "Create the physical hand for up to 1 minute. Direct it with an action." }
+      ]
+    },
+    {
+      "id": "magicProtectionCard",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Magic Protection",
+      "subtitle": "Bonus Action · 1 / Long Rest",
+      "tags": ["Bonus Action", "Long Rest"],
+      "description": "Reduce the damage from the next attack by 15 until your next turn.",
+      "buttons": [
+        { "type": "toggleCharge", "label": "Toggle Protection", "resourceId": "magicProtection" }
+      ]
+    },
+    {
+      "id": "timeAccelerationCard",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Time Acceleration",
+      "subtitle": "Bonus Action · 1 / Long Rest",
+      "image": "assets/manual_upload/time-acceleration.png",
+      "tags": ["Bonus Action", "Long Rest", "Highlight"],
+      "description": "Gain one extra action immediately this turn.",
+      "buttons": [
+        { "type": "note", "label": "Take Extra Action", "message": "Time Acceleration: take one additional action this turn." },
+        { "type": "spend", "label": "Spend Use", "resourceId": "timeAcceleration", "amount": 1 }
+      ]
+    },
+    {
+      "id": "hotGuy",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Hot Guy",
+      "subtitle": "Bonus Action · Cantrip",
+      "tags": ["Bonus Action", "At Will"],
+      "description": "Control body temperature up to thermal stage 2.",
+      "buttons": [
+        { "type": "note", "label": "Adjust Temperature", "message": "Hot Guy: adjust Haul's body temperature up to thermal stage 2." }
+      ]
+    },
+    {
+      "id": "tricks",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Tricks",
+      "subtitle": "Bonus Action · Cantrip",
+      "tags": ["Bonus Action", "At Will"],
+      "description": "Manipulate magical energy in a small area for entertainment or utility.",
+      "buttons": [
+        { "type": "note", "label": "Perform Trick", "message": "Use local magical energy control for a minor effect or flourish." }
+      ]
+    },
+    {
+      "id": "firefly",
+      "section": "Bonus Actions",
+      "kind": "feature",
+      "name": "Firefly",
+      "subtitle": "Bonus Action · Cantrip · Concentration",
+      "tags": ["Bonus Action", "Concentration", "At Will"],
+      "description": "Create a small fire spirit overhead that lights the path for 5 minutes or until dismissed.",
+      "buttons": [
+        { "type": "note", "label": "Summon Firefly", "message": "Create the hovering fire spirit. Duration: 5 minutes or until canceled." }
+      ]
+    },
+    {
+      "id": "flameGreeting",
+      "section": "Passive Features",
+      "kind": "feature",
+      "name": "Flame Greeting",
+      "subtitle": "Passive",
+      "tags": ["Passive"],
+      "description": "Reflect one-third of received damage back at the attacker as fire and gain 1 spark, up to the 3-spark cap.",
+      "buttons": [
+        { "type": "note", "label": "Reflect 1/3 Damage", "message": "Flame Greeting reflects one-third of received damage back to the attacker as fire damage." },
+        { "type": "poolGain", "label": "Gain 1 Spark", "resourceId": "sparkPool", "amount": 1 }
+      ]
+    },
+    {
+      "id": "fireSoul",
+      "section": "Passive Features",
+      "kind": "feature",
+      "name": "Fire Soul",
+      "subtitle": "Passive",
+      "tags": ["Passive"],
+      "description": "Take only 50% fire damage and ignore damage from your own fire spells."
+    },
+    {
+      "id": "cordItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Cord",
+      "subtitle": "Held item",
+      "tags": ["Passive"],
+      "description": "While held, the cord grants +3 initiative.",
+      "buttons": [
+        { "type": "toggle", "label": "Toggle Held", "resourceId": "cordHeld" }
+      ]
+    },
+    {
+      "id": "wavyAmuletItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Wavy Amulet",
+      "subtitle": "Equipped item",
+      "tags": ["Highlight"],
+      "description": "Provides +2 to all saving throws while active.",
+      "buttons": [
+        { "type": "toggle", "label": "Toggle Amulet", "resourceId": "wavyAmulet" }
+      ]
+    },
+    {
+      "id": "blackRingItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Black Ring With Blue Light",
+      "subtitle": "Equipped item",
+      "tags": ["Passive"],
+      "description": "Combat protection, artifact guidance, and one hidden function.",
+      "buttons": [
+        { "type": "toggle", "label": "Toggle Ring", "resourceId": "blackRing" }
+      ]
+    },
+    {
+      "id": "goldenPyramidItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Golden Pyramid (Naphtha)",
+      "subtitle": "Equipped item",
+      "tags": ["Highlight"],
+      "description": "Enhances fire magic. No exact numeric modifier is given in the source sheet, so this is tracked as an effect reminder.",
+      "buttons": [
+        { "type": "toggle", "label": "Toggle Pyramid", "resourceId": "goldenPyramid" }
+      ]
+    },
+    {
+      "id": "stoneItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Stone",
+      "subtitle": "Risk / power item",
+      "tags": ["Highlight"],
+      "description": "Adds +1d8 to magical damage and applies -5 to all saving throws while active.",
+      "buttons": [
+        { "type": "toggle", "label": "Toggle Stone", "resourceId": "stoneFocus" }
+      ]
+    },
+    {
+      "id": "firstSparkGlovesItem",
+      "section": "Magic Items",
+      "kind": "feature",
+      "name": "Gloves of the First Spark",
+      "subtitle": "Battle-use item",
+      "tags": ["Highlight"],
+      "description": "One fire spell each battle can crit by chance.",
+      "buttons": [
+        { "type": "toggleCharge", "label": "Prime Gloves", "resourceId": "firstSparkGloves" }
+      ]
+    }
+  ],
+  "inventory": [
+    "Active Magical Items:",
+    "- Cord",
+    "- Wavy amulet",
+    "- Black ring with blue light",
+    "- Golden pyramid (naphtha)",
+    "- Stone",
+    "- Gloves of the First Spark",
+    "",
+    "Consumables:",
+    "- Healing bottles: 1d8 HP",
+    "- Mana bottles",
+    "",
+    "Unknown / partly known items:",
+    "- Teleportation stone",
+    "- Flask of living water (Rucheyok Udachka)",
+    "- Bottle of naphtha",
+    "",
+    "Other:",
+    "- Book: Zanuldon",
+    "- Glyuny x3",
+    "- Bundle of iron harpy feathers"
+  ],
+  "creatures": [],
+  "notes": [
+    "Haul Ardan uses many bespoke mechanics with fixed custom save DCs from the source sheet.",
+    "The Wavy Amulet and Stone Focus update all saving throws live in the tracker.",
+    "Stone Focus also adds +1d8 to magical damage rolls for buttons marked as spell damage.",
+    "Golden Pyramid enhances fire magic narratively, but the source sheet gives no exact numeric bonus.",
+    "Sparks are tracked as a pool up to 3. Fireball spark spending is resolved by choosing the matching damage button and adjusting the spark pool manually.",
+    "Expand ring, pyramid, potion, or teleportation stone mechanics later if more exact rules are revealed."
+  ]
+}
+</script>
+
+<script>
+const TRACKER_DATA = JSON.parse(document.getElementById("tracker-data").textContent);
+const STORAGE_KEY = TRACKER_DATA.storageKey || "derek_tracker_template";
+const state = loadState();
+
+function loadState(){
+  const inventoryText = Array.isArray(TRACKER_DATA.inventory) ? TRACKER_DATA.inventory.join("\n") : "";
+  const fallback = {
+    hp: TRACKER_DATA.base.hpMax,
+    tempHp: TRACKER_DATA.base.tempHpDefault || 0,
+    inventory: inventoryText,
+    coins: { ...(TRACKER_DATA.coins || { gp: 0, sp: 0, cp: 0 }) },
+    resources: {}
+  };
+  for (const resource of TRACKER_DATA.resources) {
+    fallback.resources[resource.id] = resourceStateFromData(resource);
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (!saved) return fallback;
+    return {
+      hp: typeof saved.hp === "number" ? saved.hp : fallback.hp,
+      tempHp: typeof saved.tempHp === "number" ? saved.tempHp : fallback.tempHp,
+      inventory: typeof saved.inventory === "string" ? saved.inventory : fallback.inventory,
+      coins: { ...fallback.coins, ...(saved.coins || {}) },
+      resources: { ...fallback.resources, ...(saved.resources || {}) }
+    };
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function resourceStateFromData(resource){
+  if (resource.type === "pool" || resource.type === "pips" || resource.type === "slots") {
+    return { current: resource.current, active: false };
+  }
+  if (resource.type === "toggle") {
+    return { active: !!resource.active };
+  }
+  if (resource.type === "toggleCharge") {
+    return { current: resource.current, active: !!resource.active };
+  }
+  return {};
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function signed(value){
+  return value >= 0 ? `+${value}` : `${value}`;
+}
+
+function abilityMod(score){
+  return Math.floor((score - 10) / 2);
+}
+
+function getResourceDefinition(id){
+  return TRACKER_DATA.resources.find(resource => resource.id === id);
+}
+
+function getResourceState(id){
+  return state.resources[id] || {};
+}
+
+function getActiveEffects(){
+  const effects = [];
+  for (const resource of TRACKER_DATA.resources) {
+    const resourceState = getResourceState(resource.id);
+    if (!resource.effect) continue;
+    if (resource.type === "toggle" && resourceState.active) effects.push(resource.effect);
+    if (resource.type === "toggleCharge" && resourceState.active) effects.push(resource.effect);
+  }
+  return effects;
+}
+
+function computeDerived(){
+  const abilityScores = { ...TRACKER_DATA.abilities };
+  const stats = {
+    ac: TRACKER_DATA.base.ac,
+    speed: TRACKER_DATA.base.speed,
+    initiative: TRACKER_DATA.base.initiative,
+    proficiency: TRACKER_DATA.base.proficiency,
+    passivePerception: TRACKER_DATA.base.passivePerception
+  };
+  const weaponDamageBonusDice = [];
+  const spellDamageBonusDice = [];
+  let saveBonusGlobal = 0;
+  const bannerLines = [];
+
+  for (const effect of getActiveEffects()) {
+    if (effect.abilities) {
+      for (const [key, value] of Object.entries(effect.abilities)) {
+        abilityScores[key] = (abilityScores[key] || 0) + value;
+      }
+    }
+    if (effect.stats) {
+      for (const [key, value] of Object.entries(effect.stats)) {
+        stats[key] = (stats[key] || 0) + value;
+      }
+    }
+    if (Array.isArray(effect.weaponDamageBonusDice)) {
+      weaponDamageBonusDice.push(...effect.weaponDamageBonusDice);
+    }
+    if (Array.isArray(effect.spellDamageBonusDice)) {
+      spellDamageBonusDice.push(...effect.spellDamageBonusDice);
+    }
+    if (typeof effect.saveBonusGlobal === "number") {
+      saveBonusGlobal += effect.saveBonusGlobal;
+    }
+    if (Array.isArray(effect.bannerLines)) {
+      bannerLines.push(...effect.bannerLines);
+    }
+  }
+
+  return { abilityScores, stats, weaponDamageBonusDice, spellDamageBonusDice, saveBonusGlobal, bannerLines };
+}
+
+function buildQuickStats(){
+  const derived = computeDerived();
+  const spellAbility = TRACKER_DATA.base.spellcastingAbility;
+  const spellMod = spellAbility ? abilityMod(derived.abilityScores[spellAbility]) : 0;
+  const spellDc = 8 + derived.stats.proficiency + spellMod;
+  const spellAttack = derived.stats.proficiency + spellMod;
+  return [
+    { label: "AC", value: derived.stats.ac, sub: "Armor Class" },
+    { label: "HP Max", value: TRACKER_DATA.base.hpMax, sub: "Maximum HP" },
+    { label: "STR", value: derived.abilityScores.str, sub: `Modifier ${signed(abilityMod(derived.abilityScores.str))}` },
+    { label: "Speed", value: `${derived.stats.speed} ft`, sub: "Movement" },
+    { label: "Init", value: signed(derived.stats.initiative), sub: "Initiative" },
+    { label: "Spell DC", value: spellDc, sub: spellAbility ? `${spellAbility.toUpperCase()} casting` : "Spell save DC" },
+    { label: "Spell Atk", value: signed(spellAttack), sub: "Spell attack bonus" }
+  ];
+}
+
+function renderHeader(){
+  document.title = `${TRACKER_DATA.meta.name} - Tracker`;
+  document.getElementById("portrait").src = TRACKER_DATA.meta.portrait;
+  document.getElementById("charName").textContent = TRACKER_DATA.meta.name;
+  document.getElementById("charSub").textContent = TRACKER_DATA.meta.subtitle;
+  document.getElementById("charBadge").textContent = TRACKER_DATA.meta.badge;
+}
+
+function renderEffectBanner(){
+  const derived = computeDerived();
+  const banner = document.getElementById("effectBanner");
+  const text = document.getElementById("effectBannerText");
+  if (!derived.bannerLines.length) {
+    banner.classList.remove("visible");
+    text.textContent = "";
+    return;
+  }
+  banner.classList.add("visible");
+  text.textContent = derived.bannerLines.join("\n");
+}
+
+function renderQuickStats(){
+  const root = document.getElementById("quickStats");
+  root.innerHTML = "";
+  for (const item of buildQuickStats()) {
+    const div = document.createElement("div");
+    div.className = "pill";
+    div.innerHTML = `<span class="val">${item.value}</span><span class="lbl">${item.label}</span><span class="sub">${item.sub}</span>`;
+    root.appendChild(div);
+  }
+}
+
+function renderHP(){
+  document.getElementById("currentHP").value = state.hp;
+  document.getElementById("tempHP").value = state.tempHp;
+  document.getElementById("maxHP").textContent = TRACKER_DATA.base.hpMax;
+}
+
+function renderAbilities(){
+  const root = document.getElementById("abilityScores");
+  root.innerHTML = "";
+  const derived = computeDerived();
+  const boosted = new Set();
+  for (const effect of getActiveEffects()) {
+    if (effect.abilities) {
+      for (const key of Object.keys(effect.abilities)) boosted.add(key);
+    }
+  }
+  for (const key of ["str","dex","con","int","wis","cha"]) {
+    const score = derived.abilityScores[key];
+    const div = document.createElement("div");
+    div.className = "ability-cell" + (boosted.has(key) ? " active" : "");
+    div.innerHTML = `
+      <div class="ability-score">${score}</div>
+      <div class="ability-mod">${signed(abilityMod(score))}</div>
+      <div class="ability-name">${key.toUpperCase()}</div>
+    `;
+    root.appendChild(div);
+  }
+}
+
+function renderRows(rootId, rows){
+  const root = document.getElementById(rootId);
+  root.innerHTML = "";
+  const derived = computeDerived();
+  for (const row of rows) {
+    const isSavingThrow = rootId === "savingThrows";
+    const bonus = row.bonus + (isSavingThrow ? derived.saveBonusGlobal : 0);
+    const noteParts = [];
+    if (row.note) noteParts.push(row.note);
+    if (isSavingThrow && derived.saveBonusGlobal !== 0) {
+      noteParts.push(`Active item modifier ${signed(derived.saveBonusGlobal)}`);
+    }
+    const div = document.createElement("div");
+    div.className = (isSavingThrow ? "score-row" : "list-row") + (isSavingThrow && derived.saveBonusGlobal !== 0 ? " active" : "");
+    div.innerHTML = `
+      <div class="score-big">${signed(bonus)}</div>
+      <div class="score-meta">
+        <div class="score-name">${row.name}</div>
+        <div class="score-note">${noteParts.join(" · ")}</div>
+      </div>
+    `;
+    root.appendChild(div);
+  }
+}
+
+function renderResources(){
+  const root = document.getElementById("resources");
+  root.innerHTML = "";
+  for (const resource of TRACKER_DATA.resources) {
+    const resourceState = getResourceState(resource.id);
+    const card = document.createElement("div");
+    card.className = "resource-card";
+    const desc = resource.description ? `<div class="resource-desc">${resource.description}</div>` : "";
+    card.innerHTML = `
+      <div class="resource-top">
+        <div class="resource-name">${resource.label}</div>
+        <div class="resource-refresh">${resource.refresh || ""}</div>
+      </div>
+      ${desc}
+      <div class="resource-body" id="resource-body-${resource.id}"></div>
+    `;
+    root.appendChild(card);
+    const body = card.querySelector(`#resource-body-${resource.id}`);
+    if (resource.type === "pips" || resource.type === "slots") {
+      const row = document.createElement("div");
+      row.className = "pip-row";
+      for (let i = 0; i < resource.max; i++) {
+        const pip = document.createElement("button");
+        const filled = i < resourceState.current;
+        pip.className = "pip" + (filled ? "" : " empty");
+        pip.onclick = () => setResourceCurrent(resource.id, filled ? i : i + 1);
+        row.appendChild(pip);
+      }
+      body.appendChild(row);
+      appendResourceReset(body, resource.id);
+    } else if (resource.type === "pool") {
+      const row = document.createElement("div");
+      row.className = "pool-row";
+      row.innerHTML = `<div class="pool-value">${resourceState.current}/${resource.max}</div>`;
+      const actions = document.createElement("div");
+      actions.className = "resource-actions";
+      const step = resource.step || 1;
+      actions.innerHTML = `
+        <button class="btn btn-note" onclick="changePool('${resource.id}', -${step})">-${step}</button>
+        <button class="btn btn-heal" onclick="changePool('${resource.id}', ${step})">+${step}</button>
+        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
+      `;
+      row.appendChild(actions);
+      body.appendChild(row);
+    } else if (resource.type === "toggle") {
+      const actions = document.createElement("div");
+      actions.className = "resource-actions";
+      actions.innerHTML = `
+        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleResource('${resource.id}')">
+          ${resourceState.active ? "Active" : "Inactive"}
+        </button>
+      `;
+      body.appendChild(actions);
+    } else if (resource.type === "toggleCharge") {
+      const actions = document.createElement("div");
+      actions.className = "resource-actions";
+      const available = resourceState.current > 0 || resourceState.active;
+      actions.innerHTML = `
+        <button class="btn btn-toggle ${resourceState.active ? "active" : ""}" onclick="toggleChargeResource('${resource.id}')">
+          ${resourceState.active ? "Deactivate" : (available ? "Activate / Use" : "Spent")}
+        </button>
+        <button class="btn btn-reset" onclick="resetResource('${resource.id}')">Reset</button>
+      `;
+      const status = document.createElement("div");
+      status.className = "resource-desc";
+      status.style.margin = "8px 0 0";
+      status.textContent = `Uses remaining: ${resourceState.current}/${resource.max}`;
+      body.appendChild(actions);
+      body.appendChild(status);
+    }
+  }
+}
+
+function appendResourceReset(body, resourceId){
+  const actions = document.createElement("div");
+  actions.className = "resource-actions";
+  actions.innerHTML = `<button class="btn btn-reset" onclick="resetResource('${resourceId}')">Reset</button>`;
+  body.appendChild(actions);
+}
+
+function renderCards(){
+  const root = document.getElementById("cardsRoot");
+  root.innerHTML = "";
+  const sections = [...new Set(TRACKER_DATA.cards.map(card => card.section))];
+  for (const section of sections) {
+    const sectionTitle = document.createElement("div");
+    sectionTitle.className = "section-hdr";
+    sectionTitle.style.paddingLeft = "0";
+    sectionTitle.style.paddingRight = "0";
+    sectionTitle.textContent = section;
+    root.appendChild(sectionTitle);
+
+    for (const cardData of TRACKER_DATA.cards.filter(card => card.section === section)) {
+      const card = document.createElement("div");
+      card.className = "card" + (cardData.expanded ? " expanded" : "");
+      const tags = (cardData.tags || []).map(tag => {
+        const cls = ({
+          "Action": "action",
+          "Bonus Action": "bonus",
+          "Reaction": "reaction",
+          "Short Rest": "short",
+          "Long Rest": "long",
+          "Passive": "passive",
+          "Highlight": "highlight",
+          "At Will": "passive",
+          "Spell Slot": "bonus",
+          "Concentration": "reaction",
+          "On Hit": "action"
+        })[tag] || "passive";
+        return `<span class="tag ${cls}">${tag}</span>`;
+      }).join("");
+      const art = cardData.image ? `<img class="card-art" src="${cardData.image}" alt="${cardData.name}">` : "";
+      card.innerHTML = `
+        <div class="card-head ${cardData.image ? "has-art" : ""}" onclick="toggleCard(this.parentElement)">
+          <div class="card-title-wrap">
+            ${art}
+            <div class="card-title-block">
+              <div class="card-name">${cardData.name}</div>
+              <div class="card-sub">${cardData.subtitle || ""}</div>
+              <div class="tag-row">${tags}</div>
+            </div>
+          </div>
+          <div class="chev">▾</div>
+        </div>
+        <div class="card-body">
+          <div class="card-desc">${cardData.description || ""}</div>
+          <div class="resource-actions">${renderButtons(cardData).join("")}</div>
+        </div>
+      `;
+      root.appendChild(card);
+    }
+  }
+}
+
+function renderButtons(cardData){
+  return (cardData.buttons || []).map((button, index) => {
+    const action = `handleCardButton('${cardData.id}', ${index})`;
+    let cls = "btn-note";
+    if (button.type === "attack") cls = "btn-atk";
+    if (button.type === "damage" || button.type === "roll") cls = "btn-dmg";
+    if (button.type === "poolSpend" || button.type === "setHP" || button.type === "setTempHP") cls = "btn-heal";
+    if (button.type === "toggle" || button.type === "toggleCharge") cls = "btn-toggle";
+    return `<button class="btn ${cls}" onclick="${action}">${button.label}</button>`;
+  });
+}
+
+function handleCardButton(cardId, buttonIndex){
+  const cardData = TRACKER_DATA.cards.find(card => card.id === cardId);
+  const button = cardData.buttons[buttonIndex];
+  if (!button) return;
+  if (button.type === "attack") {
+    const roll = buildAttackRoll(cardData);
+    showResult(`${cardData.name} Attack`, roll.formula, roll.result, "Attack roll");
+    return;
+  }
+  if (button.type === "damage") {
+    const roll = buildDamageRoll(cardData, button.damageDice || cardData.damageDice);
+    showResult(`${cardData.name} Damage`, roll.formula, roll.result, "Damage");
+    return;
+  }
+  if (button.type === "roll") {
+    const formula = buildButtonFormula(button);
+    const result = rollFormula(formula);
+    showResult(button.label, formula, result, button.resultType || "Roll");
+    return;
+  }
+  if (button.type === "note") {
+    showResult(button.label, "", { total: "-", diceText: "" }, button.message);
+    return;
+  }
+  if (button.type === "spend") {
+    spendResource(button.resourceId, button.amount || 1);
+    return;
+  }
+  if (button.type === "toggle") {
+    toggleResource(button.resourceId);
+    return;
+  }
+  if (button.type === "toggleCharge") {
+    toggleChargeResource(button.resourceId);
+    return;
+  }
+  if (button.type === "poolSpend") {
+    changePool(button.resourceId, -(button.amount || 0));
+    return;
+  }
+  if (button.type === "poolGain") {
+    changePool(button.resourceId, button.amount || 0);
+    return;
+  }
+  if (button.type === "setHP") {
+    state.hp = button.value;
+    saveState();
+    render();
+    return;
+  }
+  if (button.type === "setTempHP") {
+    state.tempHp = button.value;
+    saveState();
+    render();
+  }
+}
+
+function buildButtonFormula(button){
+  const derived = computeDerived();
+  const parts = [button.formula];
+  if (button.applySpellBonuses) {
+    for (const extraDie of derived.spellDamageBonusDice) parts.push(`+${extraDie}`);
+  }
+  return parts.join("");
+}
+
+function buildAttackRoll(cardData){
+  const derived = computeDerived();
+  const ability = cardData.attackAbility;
+  const bonus = abilityMod(derived.abilityScores[ability]) + (TRACKER_DATA.base.proficiency || 0) + (cardData.attackBonusExtra || 0);
+  return {
+    formula: `1d20${bonus >= 0 ? "+" : ""}${bonus}`,
+    result: rollFormula(`1d20${bonus >= 0 ? "+" : ""}${bonus}`)
+  };
+}
+
+function buildDamageRoll(cardData, damageDice){
+  const derived = computeDerived();
+  const ability = cardData.damageAbility;
+  const bonus = abilityMod(derived.abilityScores[ability]) + (cardData.damageBonusExtra || 0);
+  const parts = [damageDice];
+  if (bonus !== 0) parts.push(bonus >= 0 ? `+${bonus}` : `${bonus}`);
+  for (const extraDie of derived.weaponDamageBonusDice) parts.push(`+${extraDie}`);
+  const formula = parts.join("");
+  return { formula, result: rollFormula(formula) };
+}
+
+function rollFormula(formula){
+  const cleaned = formula.replace(/\s+/g, "");
+  if (!cleaned) return { total: 0, diceText: "" };
+  const tokens = cleaned.match(/[+-]?[^+-]+/g) || [];
+  let total = 0;
+  const diceParts = [];
+  for (const token of tokens) {
+    const sign = token.startsWith("-") ? -1 : 1;
+    const body = token.replace(/^[+-]/, "");
+    if (/^\d*d\d+$/i.test(body)) {
+      const [countRaw, sidesRaw] = body.toLowerCase().split("d");
+      const count = countRaw === "" ? 1 : parseInt(countRaw, 10);
+      const sides = parseInt(sidesRaw, 10);
+      const rolls = [];
+      for (let i = 0; i < count; i++) {
+        const roll = Math.floor(Math.random() * sides) + 1;
+        rolls.push(roll);
+        total += sign * roll;
+      }
+      diceParts.push(`${sign < 0 ? "-" : ""}${body} [${rolls.join(", ")}]`);
+    } else if (/^\d+$/.test(body)) {
+      total += sign * parseInt(body, 10);
+      diceParts.push(`${sign < 0 ? "-" : "+"}${body}`);
+    }
+  }
+  return { total, diceText: diceParts.join("  ") };
+}
+
+function showResult(label, formula, result, kind){
+  const normalized = String(kind || "").toLowerCase();
+  const resultLabel = document.getElementById("resultLabel");
+  const resultFormula = document.getElementById("resultFormula");
+  const resultDice = document.getElementById("resultDice");
+  const resultTotal = document.getElementById("resultTotal");
+  const resultNote = document.getElementById("resultNote");
+
+  resultLabel.textContent = label;
+  resultFormula.textContent = formula || "";
+  resultDice.textContent = result.diceText || "";
+  resultTotal.textContent = result.total;
+  resultNote.textContent = "";
+
+  if (normalized === "note") {
+    resultNote.textContent = "Reference value";
+  } else if (normalized === "heal") {
+    resultNote.textContent = "Healing";
+  } else if (normalized === "dmg" || normalized === "damage") {
+    resultNote.textContent = "Damage";
+  } else if (normalized === "attack" || normalized === "attack roll") {
+    resultNote.textContent = "Attack roll";
+  } else if (normalized) {
+    resultNote.textContent = kind;
+  }
+
+  document.getElementById("resultOverlay").classList.add("open");
+}
+
+function closeResult(){
+  document.getElementById("resultOverlay").classList.remove("open");
+}
+
+function toggleCard(card){
+  card.classList.toggle("expanded");
+}
+
+function setResourceCurrent(resourceId, value){
+  const resource = getResourceDefinition(resourceId);
+  if (!resource) return;
+  state.resources[resourceId].current = Math.max(0, Math.min(resource.max, value));
+  saveState();
+  render();
+}
+
+function spendResource(resourceId, amount){
+  const resource = getResourceDefinition(resourceId);
+  const resourceState = getResourceState(resourceId);
+  if (!resource || typeof resourceState.current !== "number") return;
+  if (resourceState.current < amount) {
+    showResult("Resource Empty", "", { total: 0, diceText: "" }, `${resource.label} has no charges left.`);
+    return;
+  }
+  resourceState.current -= amount;
+  saveState();
+  render();
+}
+
+function changePool(resourceId, delta){
+  const resource = getResourceDefinition(resourceId);
+  const resourceState = getResourceState(resourceId);
+  if (!resource || typeof resourceState.current !== "number") return;
+  resourceState.current = Math.max(0, Math.min(resource.max, resourceState.current + delta));
+  saveState();
+  render();
+}
+
+function toggleResource(resourceId){
+  const resourceState = getResourceState(resourceId);
+  resourceState.active = !resourceState.active;
+  saveState();
+  render();
+}
+
+function toggleChargeResource(resourceId){
+  const resource = getResourceDefinition(resourceId);
+  const resourceState = getResourceState(resourceId);
+  if (!resource || !resourceState) return;
+  if (resourceState.active) {
+    resourceState.active = false;
+  } else if (resourceState.current > 0) {
+    resourceState.active = true;
+    resourceState.current -= 1;
+    if (resource.effect && typeof resource.effect.tempHpOnActivate === "number") {
+      state.tempHp = Math.max(Number(state.tempHp) || 0, resource.effect.tempHpOnActivate);
+    }
+  } else {
+    showResult("Charge Spent", "", { total: 0, diceText: "" }, `${resource.label} is already spent until ${resource.refresh}.`);
+    return;
+  }
+  saveState();
+  render();
+}
+
+function resetResource(resourceId){
+  const resource = getResourceDefinition(resourceId);
+  if (!resource) return;
+  state.resources[resourceId] = resourceStateFromData(resource);
+  saveState();
+  render();
+}
+
+function adjustHP(delta){
+  state.hp = Math.max(0, Math.min(TRACKER_DATA.base.hpMax, Number(state.hp) + delta));
+  saveState();
+  renderHP();
+}
+
+function adjustTempHP(delta){
+  state.tempHp = Math.max(0, Number(state.tempHp) + delta);
+  saveState();
+  renderHP();
+}
+
+function renderInventory(){
+  const textarea = document.getElementById("inventoryText");
+  textarea.value = state.inventory;
+  textarea.onchange = () => {
+    state.inventory = textarea.value;
+    saveState();
+  };
+}
+
+function renderCurrency(){
+  for (const key of ["gp", "sp", "cp"]) {
+    const input = document.getElementById(`coin-${key}`);
+    input.value = state.coins[key] ?? 0;
+    input.onchange = () => {
+      state.coins[key] = Math.max(0, parseInt(input.value || "0", 10));
+      saveState();
+    };
+  }
+}
+
+function renderCreatures(){
+  const root = document.getElementById("creaturesRoot");
+  root.innerHTML = "";
+  for (const creature of TRACKER_DATA.creatures || []) {
+    const card = document.createElement("div");
+    card.className = "creature-card";
+    card.innerHTML = `
+      <div class="creature-head">
+        <img src="${creature.image || TRACKER_DATA.meta.portrait}" alt="${creature.name}">
+        <div>
+          <div class="creature-name">${creature.name}</div>
+          <div class="creature-sub">${creature.subtitle || ""}</div>
+        </div>
+      </div>
+      <div class="creature-desc">${creature.description || ""}</div>
+    `;
+    root.appendChild(card);
+  }
+}
+
+function renderNotes(){
+  const root = document.getElementById("notesList");
+  root.innerHTML = "";
+  for (const note of TRACKER_DATA.notes || []) {
+    const li = document.createElement("li");
+    li.textContent = note;
+    root.appendChild(li);
+  }
+}
+
+function render(){
+  renderHeader();
+  renderEffectBanner();
+  renderQuickStats();
+  renderHP();
+  renderAbilities();
+  renderRows("savingThrows", TRACKER_DATA.saves);
+  renderRows("skillsGrid", TRACKER_DATA.skills);
+  renderResources();
+  renderCards();
+  renderCurrency();
+  renderInventory();
+  renderCreatures();
+  renderNotes();
+}
+
+document.getElementById("currentHP").addEventListener("change", event => {
+  state.hp = Math.max(0, Math.min(TRACKER_DATA.base.hpMax, parseInt(event.target.value || "0", 10)));
+  saveState();
+  renderHP();
+});
+
+document.getElementById("tempHP").addEventListener("change", event => {
+  state.tempHp = Math.max(0, parseInt(event.target.value || "0", 10));
+  saveState();
+  renderHP();
+});
+
+render();
+</script>
 </body>
 </html>
