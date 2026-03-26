@@ -445,7 +445,7 @@ body{
   border:1px solid var(--border);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:12px 14px;
+  padding:14px 16px;
 }
 .general-save-value{
   font-size:28px;
@@ -457,6 +457,19 @@ body{
   font-size:12px;
   color:var(--text2);
   line-height:1.55;
+}
+.general-save-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.general-save-passive{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--text2);
+  line-height:1.6;
+  white-space:pre-line;
 }
 .result-overlay{
   position:fixed;
@@ -538,7 +551,7 @@ body{
   </div>
 </div>
 
-<div class="section-hdr">General Saving Throw</div>
+<div class="section-hdr">Skilled Rolls</div>
 <div class="general-save-card" id="generalSaveWrap"></div>
 
 <div class="section-hdr">Sparks</div>
@@ -607,7 +620,7 @@ body{
     "initiative": 0,
     "speed": 30,
     "proficiency": 2,
-    "spellAttackBonus": 2,
+    "spellAttackBonus": 3,
     "passivePerception": 10,
     "spellcastingAbility": "int"
   },
@@ -903,6 +916,7 @@ body{
       "tags": ["Action", "Long Rest"],
       "description": "Requires a hit. Redirect damage dealt to the current target this round onto another visible target and add 4d10 void damage.",
       "buttons": [
+        { "type": "spellAttack", "label": "Spell Attack +3" },
         { "type": "roll", "label": "4d10 Void", "formula": "4d10", "resultType": "dmg", "applySpellBonuses": true },
         { "type": "note", "label": "Redirect Damage", "message": "Move the damage dealt this round from the first target onto another visible target. Damage type remains the same." },
         { "type": "spend", "label": "Spend Use", "resourceId": "elfIntervention", "amount": 1 }
@@ -1028,7 +1042,7 @@ body{
       "tags": ["Bonus Action", "At Will"],
       "description": "Create a tangible barbarian hand for up to 1 minute. Control it with an action; it can carry or throw objects.",
       "buttons": [
-        { "type": "spellAttack", "label": "Spell Attack +2" },
+        { "type": "spellAttack", "label": "Spell Attack +3" },
         { "type": "note", "label": "Summon Hand", "message": "Create the physical hand for up to 1 minute. Direct it with an action." }
       ]
     },
@@ -1216,6 +1230,7 @@ body{
   "notes": [
     "Haul Ardan uses many bespoke mechanics with fixed custom save DCs from the source sheet.",
     "The Wavy Amulet and Stone Focus update all saving throws live in the tracker.",
+    "Spell attacks use a flat +3 bonus and are available directly on cards that need an attack roll.",
     "Stone Focus also adds +1d8 to magical damage rolls for buttons marked as spell damage.",
     "Golden Pyramid enhances fire magic narratively, but the source sheet gives no exact numeric bonus.",
     "Sparks are tracked as a pool up to 3. Fireball spark spending is resolved by choosing the matching damage button and adjusting the spark pool manually.",
@@ -1471,14 +1486,18 @@ function renderGeneralSave(){
   const root = document.getElementById("generalSaveWrap");
   if (!root) return;
   const derived = computeDerived();
-  const formula = buildGeneralSaveFormula();
+  const saveFormula = buildGeneralSaveFormula();
+  const spellAttackFormula = buildSpellAttackFormula();
   root.innerHTML = `
     <div class="general-save-value">${signed(derived.saveBonusGlobal)}</div>
-    <div class="general-save-note">Current general saving throw bonus from active abilities and magic items.</div>
-    <div class="resource-actions">
-      <button class="btn btn-roll" onclick="showResult('General Saving Throw', '${formula}', rollFormula('${formula}'), 'Saving throw')">Roll Save</button>
-      <button class="btn btn-note" onclick="showResult('General Saving Throw Bonus', '', { total: '${signed(derived.saveBonusGlobal)}', diceText: '' }, 'Current save bonus')">Show Bonus</button>
+    <div class="general-save-note">General saving throw bonus from active abilities and magic items. This block also holds Haul Ardan's extra skilled rolls.</div>
+    <div class="general-save-actions">
+      <button class="btn btn-roll" onclick="showResult('General Saving Throw', '${saveFormula}', rollFormula('${saveFormula}'), 'Saving throw')">General Save</button>
+      <button class="btn btn-atk" onclick="showResult('Spell Attack', '${spellAttackFormula}', rollFormula('${spellAttackFormula}'), 'Spell attack')">Spell Attack +3</button>
+      <button class="btn btn-note" onclick="showResult('Intelligence Check', '1d20+3', rollFormula('1d20+3'), 'Intelligence check')">INT Check +3</button>
+      <button class="btn btn-note" onclick="showResult('Persuasion Check', '1d20+2', rollFormula('1d20+2'), 'Persuasion check')">Persuasion +2</button>
     </div>
+    <div class="general-save-passive">Passive bonuses:\nImmune to intimidation\nWavy Amulet currently contributes +2 to saves while active.</div>
   `;
 }
 
